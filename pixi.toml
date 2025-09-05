@@ -1,0 +1,14 @@
+[workspace]
+authors = ["mattbocc <matthew.boccalon@live.ca>"]
+channels = ["conda-forge"]
+name = "annotationdb-api"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+start = "uvicorn main:app --reload --reload-dir ./"
+prod_start = "gunicorn main:app --workers 1 --worker-class uvicorn.workers.UvicornWorker --bind 127.0.0.1:8000"
+
+[dependencies]
+fastapi = ">=0.116.1,<0.117"
+python = ">=3.13.7,<3.14"
