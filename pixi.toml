@@ -12,3 +12,7 @@ prod_start = "gunicorn main:app --workers 1 --worker-class uvicorn.workers.Uvico
 [dependencies]
 fastapi = ">=0.116.1,<0.117"
 python = ">=3.13.7,<3.14"
+sqlalchemy = ">=2.0.43,<3"
+python-dotenv = ">=1.1.1,<2"
+pandas = ">=2.3.2,<3"
+pymysql = ">=1.1.2,<2"

@@ -8,8 +8,9 @@ class Drug(BaseModel):
     molecular_formula: Optional[str] = None
     molecular_weight: Optional[str] = None
     smiles: Optional[str] = None
-    canonical_smiles: Optional[str] = None
-    isomeric_smiles: Optional[str] = None
+    # canonical_smiles: Optional[str] = None
+    # isomeric_smiles: Optional[str] = None
+    connectivity_smiles: Optional[str] = None
     inchi: Optional[str] = None
     inchikey: Optional[str] = None
     iupac_name: Optional[str] = None
@@ -52,7 +53,7 @@ class Drug(BaseModel):
     literature_count: Optional[int] = None
     annotation_types: Optional[str] = None
     annotation_type_count: Optional[int] = None
+    name: Optional[str] = None
     chembl_id: Optional[int] = None
-    standard_name: Optional[str] = None
     synonyms: Optional[str] = None
-    date_added: Optional[date] = None
+    # date_added: Optional[date] = None
