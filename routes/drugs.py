@@ -1,13 +1,15 @@
 import os
+from pydantic import BaseModel, Field
 from typing import List
 from urllib.parse import quote_plus
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy import create_engine, select, or_
 from sqlalchemy.orm import sessionmaker
 import pandas as pd
 from dotenv import load_dotenv
-from models.drug import Drug
+from models.pubchem import PubchemOutput
 from models.tables import Pubchem
+from models.output import OutputFormat
 
 load_dotenv(override=True)
 
@@ -31,16 +33,30 @@ def get_db_session():
     session.close()
 
 
-@router.post("/many")
-async def email_director(drugs: List[str], session=Depends(get_db_session)):
+@router.get(
+    "/many",
+    summary="Extract pubchem drug data by utilizing drug names",
+    # response_model=List[PubchemOutput],
+)
+async def get_many_drugs(
+    drugs: str = Query(
+        description="Drug names (comma seperated)",
+        example="Erlotinib,Gemcitabine,Afatinib",
+    ),
+    format: OutputFormat = Query(
+        OutputFormat.json, description="Output format: `json` or `dataframe`."
+    ),
+    session=Depends(get_db_session),
+):
     if not drugs:
         raise HTTPException(
-            status_code=400, detail="Need to include at least one drug in a list format"
+            status_code=400, detail="Need to include at least one drug to get output"
         )
 
-    conditions = []
+    drug_list = [drug for drug in drugs.split(",")]
 
-    for name in drugs:
+    conditions = []
+    for name in drug_list:
         if not isinstance(name, str):
             raise HTTPException(
                 status_code=400,
@@ -52,7 +68,5 @@ async def email_director(drugs: List[str], session=Depends(get_db_session)):
 
     query = select(Pubchem).where(or_(*conditions))
     rows = session.scalars(query).all()
-
-    print(query)
 
     return rows

@@ -1,9 +1,9 @@
 from pydantic import BaseModel
-from typing import Optional, Union
+from typing import Optional
 from datetime import date
 
 
-class Drug(BaseModel):
+class PubchemOutput(BaseModel):
     cid: int
     molecular_formula: Optional[str] = None
     molecular_weight: Optional[str] = None
