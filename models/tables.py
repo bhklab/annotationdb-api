@@ -1,5 +1,5 @@
-from sqlalchemy import String, Float, Integer, ForeignKey, Text, DATETIME
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import String, Float, Integer, ForeignKey, Text, DateTime, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from datetime import datetime
 
 
@@ -7,8 +7,8 @@ class Base(DeclarativeBase):
     pass
 
 
-class Pubchem(Base):
-    __tablename__ = "pubchem"
+class Drugs(Base):
+    __tablename__ = "drugs"
 
     cid: Mapped[int] = mapped_column(primary_key=True)
     molecular_formula: Mapped[str] = mapped_column(String(300))
@@ -50,20 +50,26 @@ class Pubchem(Base):
     feature_ring_count_3d: Mapped[int] = mapped_column(Integer)
     feature_hydrophobe_count_3d: Mapped[int] = mapped_column(Integer)
     conformer_model_rmsd_3d: Mapped[float] = mapped_column(Float)
-    effective_rotor_count_3d: Mapped[float] = mapped_column(Float)
+    effective_rotor_count_3d: Mapped[int] = mapped_column(Integer)
     conformer_count_3d: Mapped[int] = mapped_column(Integer)
-    fingerprint_2d: Mapped[str] = mapped_column(String(300))
-    title: Mapped[str] = mapped_column(String(100))
+    fingerprint_2d: Mapped[str] = mapped_column(Text())
+    title: Mapped[str] = mapped_column(Text())
     patent_count: Mapped[int] = mapped_column(Integer)
     patent_family_count: Mapped[int] = mapped_column(Integer)
     literature_count: Mapped[int] = mapped_column(Integer)
     annotation_types: Mapped[str] = mapped_column(Text())
     annotation_type_count: Mapped[int] = mapped_column(Integer)
-    name: Mapped[str] = mapped_column(String(300))
+    name: Mapped[str] = mapped_column(Text())
     # chembl_id: Mapped[int] = mapped_column(ForeignKey("chembl.cid"))
     chembl_id: Mapped[str] = mapped_column(String(200))
-    synonyms: Mapped[str] = mapped_column(Text())
-    date_added: Mapped[datetime] = mapped_column(DATETIME)
+    date_added: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    ### ORM layer (fields below don't show up in table but are used in queries later on for convenience)
+    synonyms: Mapped[list["DrugSynonyms"]] = relationship(
+        back_populates="compound", cascade="all, delete-orphan"
+    )
 
 
 # class Chembl(Base):
@@ -72,17 +78,22 @@ class Pubchem(Base):
 #     pubchem_cid: Mapped[int] = mapped_column(ForeignKey("pubchem.cid"))
 
 
-# class Cellosaurus(Base):
-#     __tablename__ = "cellosaurus"
+# class CellLines(Base):
+#     __tablename__ = "cell_lines"
 #     id: Mapped[int] = mapped_column(primary_key=True)
 
 
-class Synonyms(Base):
-    __tablename__ = "synonyms"
+class DrugSynonyms(Base):
+    __tablename__ = "drug_synonyms"
 
     synonym: Mapped[str] = mapped_column(Text(), primary_key=True)
     pubchem_cid: Mapped[int] = mapped_column(
-        Integer, ForeignKey("pubchem.cid"), primary_key=True
+        Integer, ForeignKey("drugs.cid", ondelete="CASCADE"), primary_key=True
     )
     source: Mapped[str] = mapped_column(String(50))
-    version: Mapped[datetime] = mapped_column(DATETIME)
+    version: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )
+
+    ### ORM layer (fields below don't show up in table but are used in queries later on for convenience)
+    compound: Mapped["Drugs"] = relationship(back_populates="synonyms")
