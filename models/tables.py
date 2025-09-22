@@ -1,4 +1,4 @@
-from sqlalchemy import String, Float, Integer, ForeignKey, Text
+from sqlalchemy import String, Float, Integer, ForeignKey, Text, DATETIME
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from datetime import datetime
 
@@ -63,7 +63,7 @@ class Pubchem(Base):
     # chembl_id: Mapped[int] = mapped_column(ForeignKey("chembl.cid"))
     chembl_id: Mapped[str] = mapped_column(String(200))
     synonyms: Mapped[str] = mapped_column(Text())
-    # date_added: Mapped[datetime] = mapped_column()
+    date_added: Mapped[datetime] = mapped_column(DATETIME)
 
 
 # class Chembl(Base):
@@ -75,3 +75,14 @@ class Pubchem(Base):
 # class Cellosaurus(Base):
 #     __tablename__ = "cellosaurus"
 #     id: Mapped[int] = mapped_column(primary_key=True)
+
+
+class Synonyms(Base):
+    __tablename__ = "synonyms"
+
+    synonym: Mapped[str] = mapped_column(Text(), primary_key=True)
+    pubchem_cid: Mapped[int] = mapped_column(
+        Integer, ForeignKey("pubchem.cid"), primary_key=True
+    )
+    source: Mapped[str] = mapped_column(String(50))
+    version: Mapped[datetime] = mapped_column(DATETIME)

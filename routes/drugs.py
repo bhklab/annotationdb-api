@@ -44,7 +44,7 @@ async def get_many_drugs(
         example="Erlotinib,Gemcitabine,Afatinib",
     ),
     format: OutputFormat = Query(
-        OutputFormat.json, description="Output format: `json` or `dataframe`."
+        OutputFormat.json, description="Output format: `json` or `csv`."
     ),
     session=Depends(get_db_session),
 ):
