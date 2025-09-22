@@ -71,6 +71,7 @@ class Compounds(Base):
     )
 
 
+# https://www.ebi.ac.uk/chembl/api/data/drug/schema?format=json
 class ChemblDrugData(Base):
     __tablename__ = "chembl_drug_data"
 
@@ -94,6 +95,7 @@ class ChemblDrugData(Base):
     rtb: Mapped[int] = mapped_column(Integer)
 
 
+# https://www.ebi.ac.uk/chembl/api/data/mechanism/schema?format=json
 class ChemblMechanism(Base):
     __tablename__ = "chembl_mechanism"
 
@@ -124,6 +126,7 @@ class ChemblMechanism(Base):
     variant_sequence_version: Mapped[int] = mapped_column(Integer)
 
 
+# https://www.ebi.ac.uk/chembl/api/data/molecule/schema?format=json
 class ChemblMolecule(Base):
     __tablename__ = "chembl_molecule"
 
