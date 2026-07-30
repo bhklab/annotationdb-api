@@ -1,0 +1,91 @@
+import os
+from typing import List, Annotated, Optional
+from urllib.parse import quote_plus
+from fastapi import APIRouter, HTTPException, Depends, Query
+from sqlalchemy import create_engine, select, or_, cast, func
+from sqlalchemy.dialects.mysql import CHAR
+from sqlalchemy.orm import sessionmaker
+from dotenv import load_dotenv
+
+from models.atc import ATCCode, ATCCodesOutput
+from models.tables import ATCCodes
+
+load_dotenv(override=True)
+
+router = APIRouter(prefix="/atc", tags=["ATC Overlap"])
+
+# Creating database connection/session
+password_cleaned = quote_plus(os.getenv("DATABASE_PASS"))
+engine = create_engine(
+    f"mysql+pymysql://{os.getenv('DATABASE_USER')}:{password_cleaned}"
+    f"@{os.getenv('DATABASE_IP')}:{os.getenv('PORT')}/{os.getenv('SELECTED_DB')}",
+    echo=True,
+)
+session_maker = sessionmaker(bind=engine, autoflush=False, autocommit=False)
+
+
+def get_db_session():
+    session = session_maker()
+    yield session  # Use 'yields' instead of 'return' to ensure we can close the session, avoiding leaks
+    session.close()
+
+
+@router.get(
+    "/overlap",
+    summary="Get levels of overlap between two atc codes",
+    response_model=ATCCodesOutput,
+)
+async def get_atcs(
+    atc1: Annotated[str, Query(alias="atc code 1", example="A01AB04")],
+    atc2: Annotated[str, Query(alias="atc code 2", example="A01AB10")],
+    api_token: Optional[str] = Query(
+        None, description="API token required to access this route"
+    ),
+    session=Depends(get_db_session),
+):
+    if not api_token or api_token != os.getenv("API_TOKEN"):
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid or missing API token",
+        )
+
+    # if atc1 or atc2 don't exist, return error
+    if not atc1 or not atc2:
+        raise HTTPException(
+            status_code=400,
+            detail="Need to include two atc codes to get overlap levels",
+        )
+
+    # count the number of overlapping characters
+    total_chars = 0
+    for i, char in enumerate(atc1):
+        if i < len(atc2) and char == atc2[i]:
+            total_chars += 1
+        else:
+            break
+
+    # ATC level character lengths: Level 1 (1), Level 2 (3), Level 3 (4), Level 4 (5), Level 5 (7)
+    level_lengths = [1, 3, 4, 5, 7]
+
+    # Step 1: Collect overlapping prefix strings
+    overlapping_prefixes = []
+    for length in level_lengths:
+        if total_chars >= length:
+            prefix = atc1[:length]
+            overlapping_prefixes.append(prefix)
+
+    # Return early if there is no overlap
+    if not overlapping_prefixes:
+        return ATCCodesOutput(levels=[])
+
+    # Step 2: Fetch matching ATC codes from DB in level order
+    stmt = (
+        select(ATCCodes)
+        .where(ATCCodes.code.in_(overlapping_prefixes))
+        .order_by(ATCCodes.code)
+    )
+    atc_codes = session.execute(stmt).scalars().all()
+
+    return {"levels": atc_codes}
+
+
