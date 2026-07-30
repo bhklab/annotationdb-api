@@ -1,7 +1,7 @@
 import os
 from typing import List, Annotated, Optional
 from urllib.parse import quote_plus
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, Security
 from sqlalchemy import create_engine, select, or_, cast, func
 from sqlalchemy.dialects.mysql import CHAR
 from sqlalchemy.orm import sessionmaker
@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 
 from models.atc import ATCCode, ATCCodesOutput
 from models.tables import ATCCodes
+from models.auth import get_api_key
 
 load_dotenv(override=True)
 
@@ -38,16 +39,9 @@ def get_db_session():
 async def get_atcs(
     atc1: Annotated[str, Query(alias="atc code 1", example="A01AB04")],
     atc2: Annotated[str, Query(alias="atc code 2", example="A01AB10")],
-    api_token: Optional[str] = Query(
-        None, description="API token required to access this route"
-    ),
+    api_key: str = Security(get_api_key),
     session=Depends(get_db_session),
 ):
-    if not api_token or api_token != os.getenv("API_TOKEN"):
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid or missing API token",
-        )
 
     # if atc1 or atc2 don't exist, return error
     if not atc1 or not atc2:
