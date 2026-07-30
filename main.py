@@ -6,6 +6,8 @@ from routes.substances import router as substance_router
 from routes.chemicals import router as chemicals_router
 from routes.cell_lines import router as cell_lines_router
 from routes.adcdb import router as adcdb_router
+from routes.atc_overlap import router as atc_router
+
 from fastapi.staticfiles import StaticFiles
 from data.description import DESCRIPTION
 
@@ -21,6 +23,8 @@ app.include_router(substance_router)
 app.include_router(chemicals_router)
 app.include_router(adcdb_router)
 app.include_router(cell_lines_router)
+app.include_router(atc_router)
+
 
 app.mount("/styling", StaticFiles(directory="styling"), name="styling")
 app.mount("/assets", StaticFiles(directory="assets"), name="assets")

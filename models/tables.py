@@ -70,6 +70,7 @@ class Compounds(Base):
     date_added: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+    atc_code: Mapped[str] = mapped_column(String(7), nullable=True)
 
     ### ORM layer (fields below don't show up in table but are used in queries later on for convenience)
     synonyms: Mapped[list["CompoundSynonyms"]] = relationship(
@@ -647,3 +648,10 @@ class OncoTree(Base):
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
+
+class ATCCodes(Base):
+    __tablename__ = "atc_codes"
+
+    code: Mapped[str] = mapped_column(String(7), primary_key=True)
+    description: Mapped[str] = mapped_column(Text())
+

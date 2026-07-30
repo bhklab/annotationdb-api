@@ -1,6 +1,6 @@
 import os
 from pydantic import BaseModel, Field
-from typing import List, Annotated
+from typing import List, Annotated, Optional
 from urllib.parse import quote_plus
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy import create_engine, select, or_, cast, func, select
@@ -108,6 +108,9 @@ async def get_compounds(
     golden_bioassay: bool = Query(
         False,
         description="Toggle to include gold standard bioassays for queried compound(s)",
+    ),
+    api_token: Optional[str] = Query(
+        None, description="API token required to get access to additional fields"
     ),
     session=Depends(get_db_session),
 ):
@@ -262,6 +265,10 @@ async def get_compounds(
         cid_to_syn = {cid: term_lower_to_orig.get(syn.lower()) for cid, syn in syn_rows}
         for c in unresolved:
             c.query_field = cid_to_syn.get(c.cid)
+
+    if not api_token or api_token != os.getenv("API_TOKEN"):
+        for c in rows:
+            c.atc_code = None
 
     return rows
 

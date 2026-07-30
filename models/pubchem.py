@@ -132,6 +132,7 @@ class PubchemOutput(BaseModel):
     drug_like: bool
     fda_approval: bool
     date_added: datetime
+    atc_code: Optional[str] = None
 
     # ORM relationship fields
     mechanisms: Optional[list[Mechanism] | None] = None
