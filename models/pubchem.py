@@ -34,16 +34,17 @@ class DICT_Rank_Toxicity(BaseModel):
 
 class Bioassay(BaseModel):
     aid: int
-    version: int
-    assay_name: str
-    source_name: str
-    source_id: str
-    description_combined: str
-    protocol_combined: str
-    comment_combined: str
-    activity_outcome_method: int
-    target_name: str
-    target_protein_accession: str
+    version: Optional[int] = None
+    assay_name: Optional[str] = None
+    source_name: Optional[str] = None
+    source_id: Optional[str] = None
+    description_combined: Optional[str] = None
+    protocol_combined: Optional[str] = None
+    comment_combined: Optional[str] = None
+    activity_outcome_method: Optional[int] = None
+    target_name: Optional[str] = None
+    target_protein_accession: Optional[str] = None
+
 
 
 class Mechanism(BaseModel):

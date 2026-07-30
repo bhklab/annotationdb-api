@@ -67,10 +67,10 @@ class Compounds(Base):
     chembl_max_phase: Mapped[int] = mapped_column(Integer)
     drug_like: Mapped[bool] = mapped_column(Boolean)
     fda_approval: Mapped[bool] = mapped_column(Boolean)
+    atc_code: Mapped[str] = mapped_column(String(7), nullable=True)
     date_added: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )
-    atc_code: Mapped[str] = mapped_column(String(7), nullable=True)
 
     ### ORM layer (fields below don't show up in table but are used in queries later on for convenience)
     synonyms: Mapped[list["CompoundSynonyms"]] = relationship(
@@ -165,16 +165,16 @@ class BioAssays(Base):
         Integer,
         primary_key=True,
     )
-    version: Mapped[int] = mapped_column(Integer)
-    assay_name: Mapped[str] = mapped_column(String(512))
-    source_name: Mapped[str] = mapped_column(String(255))
-    source_id: Mapped[str] = mapped_column(String(255))
-    description_combined: Mapped[str] = mapped_column(Text)
-    protocol_combined: Mapped[str] = mapped_column(Text)
-    comment_combined: Mapped[str] = mapped_column(Text)
-    activity_outcome_method: Mapped[int] = mapped_column(Integer)
-    target_name: Mapped[str] = mapped_column(Text)
-    target_protein_accession: Mapped[str] = mapped_column(Text)
+    version: Mapped[int] = mapped_column(Integer, nullable=True)
+    assay_name: Mapped[str] = mapped_column(String(512), nullable=True)
+    source_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    source_id: Mapped[str] = mapped_column(String(255), nullable=True)
+    description_combined: Mapped[str] = mapped_column(Text, nullable=True)
+    protocol_combined: Mapped[str] = mapped_column(Text, nullable=True)
+    comment_combined: Mapped[str] = mapped_column(Text, nullable=True)
+    activity_outcome_method: Mapped[int] = mapped_column(Integer, nullable=True)
+    target_name: Mapped[str] = mapped_column(Text, nullable=True)
+    target_protein_accession: Mapped[str] = mapped_column(Text, nullable=True)
 
     compound_bioassays: Mapped[list["CompoundBioAssays"]] = relationship(
         "CompoundBioAssays",
