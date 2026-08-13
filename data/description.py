@@ -34,9 +34,8 @@ They all accept an unique idenifier for the respective annotation, then return t
 
 <h3>/all Routes</h3>
 <p>
-	These routes provide all available available identifiers for the various compounds,
-	substances, cell lines, and antibody-drug conjugates in our database.
-	
+	These routes provide all available identifiers for the various compounds, substances, cell lines, and antibody-drug
+	conjugates in our database.
 </p>
 
 <ol>
@@ -61,7 +60,6 @@ They all accept an unique idenifier for the respective annotation, then return t
 	or disclude additional annotation data for mechanisms, toxicity, and bioassays.
 	
 </p>
-
 <ol>
 	<li>
 		Compound route example (Acetaminophen): <a href="{os.getenv("URL_PREFIX")}/compound/many?compound=Acetaminophen&bioassay=true&mechanism=true&toxicity=true&golden_bioassay=true" target="_blank"><code>{os.getenv("URL_PREFIX")}/compound/many?compound=Acetaminophen&bioassay=true&mechanism=true&toxicity=true&golden_bioassay=true</code></a>
@@ -77,8 +75,37 @@ They all accept an unique idenifier for the respective annotation, then return t
     </li>
 </ol>
 
-<h2>Additional Parameter Dictionary</h2>
+<h3>/atc/overlap Route</h3>
 
+<p>
+	This route takes two atc code parameters and produces the levels of overlap. Read WHO's
+	<a href="https://www.who.int/tools/atc-ddd-toolkit/atc-classification" target="_blank" rel="noopener noreferrer">classification toolkit</a>
+	to get an understanding of the provided results. <strong>Due to the WHO's policy, you must request a key through our contact email
+	to access the response data.</strong>
+</p>
+<p>
+	
+</p>
+<ol>
+	<li>
+		ATC overlap route example (A01AB04 and A01AB10): <a href="{os.getenv("URL_PREFIX")}/atc/overlap?atc%20code%201=A01AB04&atc%20code%202=A01AB10" target="_blank"><code>{os.getenv("URL_PREFIX")}/atc/overlap?atc%20code%201=A01AB04&atc%20code%202=A01AB10</code></a>
+    </li>
+</ol>
+
+
+<h3>/gene/annotation-files Route</h3>
+
+<p>
+	This route produces download links for the Gencode and Ensembl gene annotations our team uses in curated datasets.
+</p>
+<ol>
+	<li>
+		Gene annotation files route: <a href="{os.getenv("URL_PREFIX")}/gene/annotation-files" target="_blank"><code>{os.getenv("URL_PREFIX")}/gene/annotation-files</code></a>
+    </li>
+</ol>
+
+
+<h2>Additional Parameter Dictionary</h2>
 
 For the compound, substance, and chemical <code>/many</code> routes, the following parameters can be toggled
 on or off (off by default) to include additional annotation data, as show in the Technical Details section above.
