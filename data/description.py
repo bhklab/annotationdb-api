@@ -6,67 +6,150 @@ load_dotenv(override=True)
 DESCRIPTION = f"""
 This API is developed and maintained by the <a href="https://bhklab.ca" target="_blank">Benjamin Haibe-Kains lab</a>
 
-The AnnotationDB API serves as a tool to retrieve annotations for various compounds and cell lines. The stored compounds
-and cell lines have either been used in datasets produced by the Haibe-Kains lab or have been requested by close
-collaborators. Our annotations are timestamped and only updated annually (every 12 months). Once a full database update has concluded,
-toggles to older versions will be available to ensure transparency and version control.
+<h2>Overview</h2>
+<p>The AnnotationDB API serves as a tool to retrieve annotations for various compounds, substances, antibody-drug conjugates, and cell lines
+pivotal for clear and reproducible cancer research. Our annotations are timestamped and only updated annually (every 12 months).
+Once a full database update has concluded, toggles to older versions will be available to ensure transparency and version control.</p>
 
-Note, AnnotationDB is made up of two major internal components
+<p>AnnotationDB is made up of two major internal components:</p>
 <ol>
-	<li>A SQL database of compound and cell line annotations</li>
-    <li>This Rest API that interfaces with the SQL database for annotation data</li>
+	<li>A MySQL database focused primarily on compound, substance, antibody-drug conjugate (ADC), and cell line annotations</li>
+    <li><strong>This REST API</strong> that interfaces with the MySQL database for annotation data</li>
 </ol>
 
-<strong>Compound annotations</strong> along with accompanying bioassay and toxicity fields are stored directly from
-<a href="https://pubchem.ncbi.nlm.nih.gov/docs/programmatic-access" target="_blank">Pubchem</a>.
-Compound mechnanism/MOA fields are stored directly from
-<a href="https://www.ebi.ac.uk/chembl/api/data/docs" target="_blank">ChEMBL</a>.
-All <strong>cell line annotation</strong> fields are stored directly from
-<a href="https://api.cellosaurus.org/api-methods" target="_blank"> cellosaurus</a>.
+<strong>Compound annotations</strong> along with accompanying bioassay, toxicity, and Anatomical Therapeutic Classification codes (ATCs)
+fields are retrieved directly from
+<a href="https://pubchem.ncbi.nlm.nih.gov/docs/programmatic-access" target="_blank" rel="noopener noreferrer">Pubchem's REST/View API</a>.
+<strong>Compound mechanisms of actions (MOAs)</strong> are retrieved directly from
+<a href="https://www.ebi.ac.uk/chembl/api/data/docs" target="_blank" rel="noopener noreferrer">ChEMBL's REST API</a>.
+<strong>Antibody-drug conjugates (ADCs)</strong> have been programatically scraped from
+<a href="https://adcdb.idrblab.net/" target="_blank" rel="noopener noreferrer">ADCdb</a>.
+<strong>Cell line annotations</strong> are retrieved directly from
+<a href="https://api.cellosaurus.org/api-methods" target="_blank" rel="noopener noreferrer">Cellosaurus' REST API</a>.
 
-There are two sets of compound and cell line GET routes that work almost identically. The first routes are the
-<strong>/all</strong> routes which simply list out all the compounds or cell lines stored in the database.
+
+<h2>Technical Details</h2>
+<p>There are seven subsets of GET routes in AnnotationDB. The <strong>Compounds</strong>, <strong>Substances</strong>, <strong>Chemicals</strong>, and <strong>Cell Lines</strong> routes work almost identically.
+They all accept an unique idenifier for the respective annotation, then return the metadata associated (if it exists) in JSON.
+
+<h3>/all Routes</h3>
+<p>
+	These routes provide all available available identifiers for the various compounds,
+	substances, cell lines, and antibody-drug conjugates in our database.
+	
+</p>
 
 <ol>
 	<li>
-		Compound specific route: <a href="{os.getenv("URL_PREFIX")}/compound/all" target="_blank"><code>{os.getenv("URL_PREFIX")}/compound/all</code></a>
+		Compound route: <a href="{os.getenv("URL_PREFIX")}/compound/all" target="_blank"><code>{os.getenv("URL_PREFIX")}/compound/all</code></a>
+    </li>
+	<li>
+		Substance route: <a href="{os.getenv("URL_PREFIX")}/substance/all" target="_blank"><code>{os.getenv("URL_PREFIX")}/substance/all</code></a>
     </li>
     <li>
-    	Cell line specific route: <a href="{os.getenv("URL_PREFIX")}/cell_line/all" target="_blank" class="code-block"><code>{os.getenv("URL_PREFIX")}/cell_line/all</code></a>
+    	Antibody-drug conjugate route: <a href="{os.getenv("URL_PREFIX")}/adc/all" target="_blank" ><code>{os.getenv("URL_PREFIX")}/adc/all</code></a>
+    </li>
+	<li>
+    	Cell line route: <a href="{os.getenv("URL_PREFIX")}/cell_line/all" target="_blank" ><code>{os.getenv("URL_PREFIX")}/cell_line/all</code></a>
     </li>
 </ol>
 
-The second pair of routes are the <strong>/many</strong> routes which retrieve the full annotation data for either compounds
-or cell lines stored in the database. These routes require one or more additional parameters in the GET request.
+<h3>/many Routes</h3>
+<p>
+	These routes provide full annotation data for compounds, substances, cell lines, and antibody-drug conjugates via identifiers
+	retrieved from respective <code>/all</code> routes. Some of these routes accept additional paramaters which will include
+	or disclude additional annotation data for mechanisms, toxicity, and bioassays.
+	
+</p>
 
 <ol>
 	<li>
-    	Compound specific route: <a href="{os.getenv("URL_PREFIX")}/compound/many?compound=Aspirin&compound=59174488&format=json&bioassay=true&mechanism=true&toxicity=true&golden_bioassay=true" target="_blank"><code>{os.getenv("URL_PREFIX")}/compound/many?compound=Aspirin&compound=59174488&format=json&bioassay=true&mechanism=true&toxicity=true&golden_bioassay=true</code></a>
-        <ul>
-        	<li><strong>Mandatory</strong>: Compound identifiers are taken as a repeated/multi-value query parameter. To query multiple compounds, use the <code>compound=</code> parameter repeatedly.</li>
-            <li><strong>Optional</strong>: Only json can be placed after <code>format=</code>. <i>The option for tabular output will be available soon</i> </li>
-            <ul><li><strong>Default value</strong>: json</li></ul>
-            <li><strong>Optional</strong>: true/false goes after <code>bioassay=</code> to toggle populating the array of homo sapien bioassays related to the compound(s)</li>
-			<ul><li><strong>Default value</strong>: false</li></ul>
-            <li><strong>Optional</strong>: true/false goes after <code>golden_bioassay=</code> to toggle populating the array of only golden specific homo sapien bioassays related to the compound(s). The <code>bioassay=</code> parameter must be set to true for golden bioassays to be retrieved. </li>
-			<ul><li><strong>Default value</strong>: false</li></ul>
-            <li><strong>Optional</strong>: true/false goes after <code>mechanism=</code> to toggle populating the mechanism(s) of action related to the compound(s)</li>
-            <ul><li><strong>Default value</strong>: false</li></ul>
-            <li><strong>Option</strong>: true/false goes after <code>toxicity=</code> to toggle populating the toxicity fields related to the compound(s)</li>
-            <ul><li><strong>Default value</strong>: false</li></ul>
-        </ul>
+		Compound route example (Acetaminophen): <a href="{os.getenv("URL_PREFIX")}/compound/many?compound=Acetaminophen&bioassay=true&mechanism=true&toxicity=true&golden_bioassay=true" target="_blank"><code>{os.getenv("URL_PREFIX")}/compound/many?compound=Acetaminophen&bioassay=true&mechanism=true&toxicity=true&golden_bioassay=true</code></a>
+    </li>
+	<li>
+		Substance route example (Bevacizumab): <a href="{os.getenv("URL_PREFIX")}/substance/many?substance=Bevacizumab&mechanism=true&toxicity=true" target="_blank"><code>{os.getenv("URL_PREFIX")}/substance/many?substance=Bevacizumab&mechanism=true&toxicity=true</code></a>
     </li>
     <li>
-    	Cell line specific route: <a href="{os.getenv("URL_PREFIX")}/cell_line/many?cell_lines=HL-60,CVCL_2030&format=json" target="_blank"><code>{os.getenv("URL_PREFIX")}/cell_line/many?cell_lines=HL-60,CVCL_2030&format=json</code></a>
+    	Antibody-drug conjugate route example (DRG0AAJTS): <a href="{os.getenv("URL_PREFIX")}/adc/many?adc=DRG0AAJTS" target="_blank" ><code>{os.getenv("URL_PREFIX")}/adc/many?adc=DRG0AAJTS</code></a>
+    </li>
+	<li>
+    	Cell line route example (HL-60): <a href="{os.getenv("URL_PREFIX")}/cell_line/many?cell_lines=HL-60" target="_blank" ><code>{os.getenv("URL_PREFIX")}/cell_line/many?cell_lines=HL-60</code></a>
+    </li>
+</ol>
+
+<h2>Additional Parameter Dictionary</h2>
+
+
+For the compound, substance, and chemical <code>/many</code> routes, the following parameters can be toggled
+on or off (off by default) to include additional annotation data, as show in the Technical Details section above.
+
+<ul>
+    <li><code>mechanism=</code>: true/false field which decides whether to include the mechanism(s) of action related to the compound(s) queried for</li>
+    <ul><li><strong>Default value</strong>: false</li></ul>
+    <li><code>toxicity=</code>: true/false field which decides whether to include the toxicity fields related to the compound(s) queried for</li>
+    <ul><li><strong>Default value</strong>: false</li></ul>
+	<li><code>bioassay=</code>: true/false field which decides whether to include the list of homo sapien bioassays related to the compound(s) queried for</li>
+    <ul><li><strong>Default value</strong>: false</li></ul>
+    <li><code>golden_bioassay=</code>: true/false field which decides whether to include the list of only our internal
+	<a href="https://github.com/bhklab/pcba_qc" target="_blank" rel="noopener noreferrer">gold standard homo sapien bioassays</a>
+	related to the compound(s) queried for</li>
+    <ul><li><strong>Default value</strong>: false</li></ul>
+</ul>
+
+
+<h2>Annotation References</h2>
+<ul>
+<li>Compound/Substance Annotations</li>
+	<ul>
+	<li>Pubchem</li>
+	<ul>
+		<li>
+			<a href="https://pubchem.ncbi.nlm.nih.gov/docs/pug-rest-tutorial#section=How-PUG-REST-Works" target="_blank" rel="noopener noreferrer">REST (Compounds/Substances/Bioassays)</a>
+		</li>
+		<li>
+			<a href="https://pubchem.ncbi.nlm.nih.gov/docs/pug-view" target="_blank" rel="noopener noreferrer">View (Toxicity)</a>
+		</li>
+		<li>
+			<a href="https://www.fda.gov/science-research/liver-toxicity-knowledge-base-ltkb/ltkb-benchmark-dataset" target="_blank" rel="noopener noreferrer">Liver Toxicity Knowledge Database (LTKB)</a>
+		</li>
+		<li>
+			<a href="https://www.fda.gov/science-research/liver-toxicity-knowledge-base-ltkb/drug-induced-liver-injury-rank-dilirank-20-dataset" target="_blank" rel="noopener noreferrer">Drug Induced Liver Injury Rank (DILIrank 2.0)</a>
+		</li>
+		<li>
+			<a href="https://www.fda.gov/science-research/liver-toxicity-knowledge-base-ltkb/drug-induced-liver-injury-severity-and-toxicity-dilist-dataset" target="_blank" rel="noopener noreferrer">Drug-Induced Liver Injury Severity and Toxicity (DILIst)</a>
+		</li>
+		<li>
+			<a href="https://www.who.int/tools/atc-ddd-toolkit/atc-classification" target="_blank" rel="noopener noreferrer">Anatomical Therapeutic Classification codes (ATCs)</a>
+		</li>
+	</ul>
+		<li>ChEMBL</li>
 		<ul>
-        	<li><strong>Mandatory</strong>: Cell line identifiers go after the <code>cell_lines=</code>. The cell line list must be comma separated without spaces between items</li>
-            <li><strong>Optional</strong>: Only json can be placed after <code>format=</code>. <i>The option for tabular output will be available soon</i> </li>
-            <ul><li><strong>Default value</strong>: json</li></ul>
-        </ul>
-    </li>
-</ol>
+			<li>
+				<a href="https://www.ebi.ac.uk/chembl/explore/drug_mechanisms/" target="_blank" rel="noopener noreferrer">ChEMBL Drug Mechanism of Action (MOA)
+			</li>
+		</ul>
+	</ul>
+	<li>Antibody-Drug Conjugates</li>
+	<ul>
+		<li>
+			<a href="https://adcdb.idrblab.net/" target="_blank" rel="noopener noreferrer">ADCdb</a>
+		</li>
+	</ul>
+	<li>Cell Lines</li>
+	<ul>
+		<li>
+			<a href="https://api.cellosaurus.org/api-methods" target="_blank" rel="noopener noreferrer">Cellosaurus' REST API</a>
+		</li>
+	</ul>
+
+</ul>
 
 
-    
+<!-- <h2>Data Dictionary</h2> -->
+
+
+
+<h2>Contact</h2>
+
 Please forward any questions or concerns to <a href="mailto:annotationdb-help@bhklab.ca">annotationdb-help@bhklab.ca</a>
 """
