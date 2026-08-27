@@ -13,49 +13,85 @@ from models.tables import CompoundBioAssays, Compounds, CompoundSynonyms, BioAss
 from models.output import OutputFormat
 from models.auth import get_optional_api_key
 
+# GOLDEN_BIOASSAYS = [
+#     485290,
+#     1508612,
+#     1645840,
+#     1645841,
+#     1645842,
+#     492947,
+#     1030,
+#     743075,
+#     743080,
+#     588795,
+#     2101,
+#     602179,
+#     504327,
+#     995,
+#     493208,
+#     1777,
+#     1631,
+#     743094,
+#     651631,
+#     504847,
+#     1159551,
+#     1259242,
+#     1259241,
+#     743012,
+#     1224868,
+#     1224880,
+#     1346977,
+#     743014,
+#     1224870,
+#     1224872,
+#     1224874,
+#     1224877,
+#     1224885,
+#     1224886,
+#     743015,
+#     1224873,
+#     1224887,
+#     1224889,
+#     1224867,
+#     720516,
+#     651632,
+#     651634,
+# ]
+
 GOLDEN_BIOASSAYS = [
-    485290,
-    1508612,
-    1645840,
-    1645841,
-    1645842,
-    492947,
-    1030,
+    2060322,
+    624171,
+    624246,
+    743035,
+    743036,
+    743040,
+    743042,
+    743069,
+    624287,
+    624288,
     743075,
+    743079,
     743080,
-    588795,
-    2101,
-    602179,
-    504327,
-    995,
-    493208,
-    1777,
-    1631,
     743094,
+    1645877,
+    652025,
+    1963823,
+    1963824,
+    1645876,
     651631,
-    504847,
-    1159551,
-    1259242,
-    1259241,
-    743012,
-    1224868,
-    1224880,
-    1346977,
-    743014,
-    1224870,
-    1224872,
-    1224874,
-    1224877,
-    1224885,
-    1224886,
-    743015,
-    1224873,
-    1224887,
-    1224889,
-    1224867,
-    720516,
-    651632,
-    651634,
+    504706,
+    686970,
+    902,
+    903,
+    904,
+    914,
+    915,
+    924,
+    1454,
+    2528,
+    995,
+    485349,
+    1347055,
 ]
 
 load_dotenv(override=True)
@@ -102,6 +138,9 @@ async def get_compounds(
     ),
     mechanism: bool = Query(
         False, description="Toggle to include ChEMBL mechanism for queried compound(s)"
+    ),
+    indication: bool = Query(
+        False, description="Toggle to include ChEMBL drug indications for queried compound(s)"
     ),
     toxicity: bool = Query(
         False, description="Toggle to include toxicity for queried compound(s)"
@@ -157,6 +196,8 @@ async def get_compounds(
     options = []
     if mechanism:
         options.append(selectinload(Compounds.mechanisms))
+    if indication:
+        options.append(selectinload(Compounds.drug_indications))
     if bioassay:
         if golden_bioassay:
             options.append(
@@ -348,6 +389,9 @@ async def get_compounds_new(
     mechanism: bool = Query(
         False, description="Toggle to include ChEMBL mechanism for queried compound(s)"
     ),
+    indication: bool = Query(
+        False, description="Toggle to include ChEMBL drug indications for queried compound(s)"
+    ),
     toxicity: bool = Query(
         False, description="Toggle to include toxicity for queried compound(s)"
     ),
@@ -402,6 +446,8 @@ async def get_compounds_new(
     options = []
     if mechanism:
         options.append(selectinload(Compounds.mechanisms))
+    if indication:
+        options.append(selectinload(Compounds.drug_indications))
     if bioassay:
         if golden_bioassay:
             options.append(
@@ -597,6 +643,7 @@ async def get_compounds_new(
                 "fda_approval": c.fda_approval,
                 "date_added": c.date_added,
                 "mechanisms": c.mechanisms if mechanism else None,
+                "drug_indications": c.drug_indications if indication else None,
                 "toxicity": c.toxicity if toxicity else None,
                 "diril_toxicity": c.diril_toxicity if toxicity else None,
                 "dict_rank_toxicity": c.dict_rank_toxicity if toxicity else None,

@@ -7,85 +7,126 @@ class AdcList(BaseModel):
     adc_name: str
     adc_drug_name: str
 
+class AdcIndication(BaseModel):
+    id: int
+    adc_id: str
+    name: str
+    status: str
+    trial_ids: Optional[str] = None
+    document: Optional[str] = None
+    link: Optional[str] = None
+
 class AdcOutput(BaseModel):
     adc_id: str
     adc_drug_name: str
     adc_name: str
-    adc_brand_name: str
     adc_phase: str
     adc_drug_status: str
     adc_detail_url: str
-    adc_synonyms: str
-    adc_organization: str
-    adc_drug_to_antibody_ratio: str
-    adc_structure: str
-    adc_therapeutic_target: str
-    adc_conjugate_type: str
-    adc_combination_type: str
-    adc_special_approvals: str
+
+    adc_brand_name: Optional[str] = None
+    adc_synonyms: Optional[str] = None
+    adc_organization: Optional[str] = None
+    adc_drug_to_antibody_ratio: Optional[str] = None
+    adc_structure: Optional[str] = None
+    adc_therapeutic_target: Optional[str] = None
+    adc_conjugate_type: Optional[str] = None
+    adc_combination_type: Optional[str] = None
+    adc_special_approvals: Optional[str] = None
     adc_pubchem_sid: Optional[int] = None
-    adc_drugbank_id: str
-    adc_chembl_id: str
-    adc_absorption: str
-    adc_distribution: str
-    adc_metabolism: str
-    adc_elimination: str
-    adc_toxicity: str
-    adc_drugmap_id: str
-    adc_ttd_id: str
-    adc_dresis_id: str
+    adc_drugbank_id: Optional[str] = None
+    adc_chembl_id: Optional[str] = None
+    adc_drugmap_id: Optional[str] = None
+    adc_ttd_id: Optional[str] = None
+    adc_dresis_id: Optional[str] = None
+    adc_chebi_id: Optional[str] = None
+    adc_absorption: Optional[str] = None
+    adc_distribution: Optional[str] = None
+    adc_metabolism: Optional[str] = None
+    adc_elimination: Optional[str] = None
+    adc_toxicity: Optional[str] = None
 
-    antibody_id: str
     antibody_name: str
-    antibody_organization: str
-    antibody_indication: str
-    antibody_synonyms: str
-    antibody_type: str
-    antibody_subtype: str
-    antibody_antigen_name: str
-    antibody_chembl_id: str
-    antibody_heavy_chain_sequence: str
-    antibody_heavy_chain_variable_domain: str
-    antibody_heavy_chain_constant_domain_1: str
-    antibody_heavy_chain_constant_domain_2: str
-    antibody_heavy_chain_constant_domain_3: str
-    antibody_heavy_chain_hinge_region: str
-    antibody_heavy_chain_cdr_1: str
-    antibody_heavy_chain_cdr_2: str
-    antibody_heavy_chain_cdr_3: str
-    antibody_light_chain_sequence: str
-    antibody_light_chain_variable_domain: str
-    antibody_light_chain_constant_domain: str
-    antibody_light_chain_cdr_1: str
-    antibody_light_chain_cdr_2: str
-    antibody_light_chain_cdr_3: str
+    antibody_id: Optional[str] = None
+    antibody_organization: Optional[str] = None
+    antibody_indication: Optional[str] = None
+    antibody_synonyms: Optional[str] = None
+    antibody_type: Optional[str] = None
+    antibody_subtype: Optional[str] = None
+    antibody_antigen_name: Optional[str] = None
+    antibody_chembl_id: Optional[str] = None
+    antibody_drugbank_id: Optional[str] = None
+    antibody_drug_central_id: Optional[str] = None
+    antibody_pdb_id: Optional[str] = None
+    antibody_approval_date: Optional[str] = None
+    antibody_brand_name: Optional[str] = None
+    antibody_heavy_chain_sequence: Optional[str] = None
+    antibody_heavy_chain_variable_domain: Optional[str] = None
+    antibody_heavy_chain_constant_domain_1: Optional[str] = None
+    antibody_heavy_chain_constant_domain_2: Optional[str] = None
+    antibody_heavy_chain_constant_domain_3: Optional[str] = None
+    antibody_heavy_chain_hinge_region: Optional[str] = None
+    antibody_heavy_chain_cdr_1: Optional[str] = None
+    antibody_heavy_chain_cdr_2: Optional[str] = None
+    antibody_heavy_chain_cdr_3: Optional[str] = None
+    antibody_light_chain_sequence: Optional[str] = None
+    antibody_light_chain_variable_domain: Optional[str] = None
+    antibody_light_chain_constant_domain: Optional[str] = None
+    antibody_light_chain_cdr_1: Optional[str] = None
+    antibody_light_chain_cdr_2: Optional[str] = None
+    antibody_light_chain_cdr_3: Optional[str] = None
 
-    payload_id: str
     payload_name: str
-    payload_synonyms: str
-    payload_targets: str
-    payload_structure: str
-    payload_formula: str
-    payload_isosmiles: str
+    payload_id: Optional[str] = None
+    payload_synonyms: Optional[str] = None
+    payload_targets: Optional[str] = None
+    payload_structure: Optional[str] = None
+    payload_formula: Optional[str] = None
+    payload_isosmiles: Optional[str] = None
     payload_pubchem_cid: Optional[int] = None
-    payload_inchi: str
-    payload_inchikey: str
-    payload_iupac_name: str
-    payload_pharmaceutical_properties: str
+    payload_inchi: Optional[str] = None
+    payload_inchikey: Optional[str] = None
+    payload_iupac_name: Optional[str] = None
+    payload_pharmaceutical_properties: Optional[str] = None
 
-    linker_id: str
     linker_name: str
-    linker_type: str
-    linker_antibody_linker_relation: str
-    linker_structure: str
-    linker_formula: str
-    linker_isosmiles: str
+    linker_id: Optional[str] = None
+    linker_type: Optional[str] = None
+    linker_antibody_linker_relation: Optional[str] = None
+    linker_structure: Optional[str] = None
+    linker_formula: Optional[str] = None
+    linker_isosmiles: Optional[str] = None
     linker_pubchem_cid: Optional[int] = None
-    linker_inchi: str
-    linker_inchikey: str
-    linker_iupac_name: str
-    linker_pharmaceutical_properties: str
+    linker_inchi: Optional[str] = None
+    linker_inchikey: Optional[str] = None
+    linker_iupac_name: Optional[str] = None
+    linker_pharmaceutical_properties: Optional[str] = None
+
+    antigen_id: Optional[str] = None
+    antigen_name: Optional[str] = None
+    antigen_gene_name: Optional[str] = None
+    antigen_gene_id: Optional[str] = None
+    antigen_uniprot_entry: Optional[str] = None
+    antigen_hgnc_id: Optional[str] = None
+    antigen_kegg_id: Optional[str] = None
+    antigen_family: Optional[str] = None
+    antigen_function: Optional[str] = None
+    antigen_sequence: Optional[str] = None
+    antigen_synonym: Optional[str] = None
+
+    target_id: Optional[str] = None
+    target_name: Optional[str] = None
+    target_gene_name: Optional[str] = None
+    target_gene_id: Optional[str] = None
+    target_uniprot_entry: Optional[str] = None
+    target_hgnc_id: Optional[str] = None
+    target_kegg_id: Optional[str] = None
+    target_family: Optional[str] = None
+    target_function: Optional[str] = None
+    target_sequence: Optional[str] = None
+    target_synonym: Optional[str] = None
 
     # Joined property
+    indications: Optional[list[AdcIndication] | None] = None
     substance_data: Optional[SubstanceOutput] = None
     query_field: Optional[str] = None

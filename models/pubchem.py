@@ -78,6 +78,24 @@ class Mechanism(BaseModel):
     inferred_from_parent: bool
 
 
+class DrugIndication(BaseModel):
+    molecule_chembl_id: str
+    parent_molecule_chembl_id: Optional[str] = None
+    drugind_id: int
+    max_phase_for_ind: Optional[str] = None
+    mesh_id: str
+    mesh_heading: str
+    efo_id: Optional[str] = None
+    efo_term: Optional[str] = None
+    clinical_trials_ref_ids: Optional[str] = None
+    daily_med_ref_ids: Optional[str] = None
+    ema_ref_ids: Optional[str] = None
+    fda_ref_ids: Optional[str] = None
+    usan_ref_ids: Optional[str] = None
+    inn_ref_ids: Optional[str] = None
+    inferred_from_parent: bool = False
+
+
 class PubchemOutput(BaseModel):
     cid: int
     title: str
@@ -137,6 +155,7 @@ class PubchemOutput(BaseModel):
 
     # ORM relationship fields
     mechanisms: Optional[list[Mechanism] | None] = None
+    drug_indications: Optional[list[DrugIndication] | None] = None
     bioassays: Optional[list[Bioassay] | None] = None
     toxicity: Optional[list[Toxicity]] = None
     diril_toxicity: Optional[DIRIL_Toxicity | None] = None
@@ -202,6 +221,7 @@ class PubChemOutputWithBioassayIds(BaseModel):
 
     # ORM relationship fields
     mechanisms: Optional[list[Mechanism] | None] = None
+    drug_indications: Optional[list[DrugIndication] | None] = None
     toxicity: Optional[list[Toxicity]] = None
     diril_toxicity: Optional[DIRIL_Toxicity| None] = None
     dict_rank_toxicity: Optional[DICT_Rank_Toxicity | None] = None
@@ -238,6 +258,7 @@ class SubstanceOutput(BaseModel):
 
     # ORM relationship fields
     mechanisms: Optional[list[Mechanism] | None] = None
+    drug_indications: Optional[list[DrugIndication] | None] = None
     toxicity: Optional[list[SubstanceToxicityOutput]] = None
     query_field: Optional[str] = None
 

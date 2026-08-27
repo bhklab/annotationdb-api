@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy import create_engine, select, or_, cast, func
 from sqlalchemy.dialects.mysql import CHAR
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, selectinload
 from dotenv import load_dotenv
 
 from models.adc import AdcList, AdcOutput
@@ -45,6 +45,9 @@ async def get_adcs(
             description="Unique ADC identifiers such as: adc_id, adc_name, or adc_drug_name (&adc= separated))",
         ),
     ],
+    indication: bool = Query(
+        False, description="Toggle to include ADC indications for queried ADC(s)"
+    ),
     session=Depends(get_db_session),
 ):
     if not adcs:
@@ -71,11 +74,16 @@ async def get_adcs(
     drug_name_idx_expr = cast(func.lower(AntibodyDrugConjugates.adc_drug_name), CHAR(255, charset="utf8mb4"))
     id_idx_expr = cast(func.lower(AntibodyDrugConjugates.adc_id), CHAR(255, charset="utf8mb4"))
 
+    options = []
+    if indication:
+        options.append(selectinload(AntibodyDrugConjugates.indications))
+
     retry = 0
     while retry < 3:
         try:
             rows = (
                 session.query(AntibodyDrugConjugates)
+                .options(*options)
                 .filter(
                     or_(
                         name_idx_expr.in_(other_terms_255),
@@ -118,6 +126,7 @@ async def get_adcs(
             substances=search_terms,
             format=OutputFormat.json,
             mechanism=True,
+            indication=True,
             toxicity=True,
             session=session
         )

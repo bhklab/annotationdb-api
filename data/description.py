@@ -113,6 +113,8 @@ on or off (off by default) to include additional annotation data, as show in the
 <ul>
     <li><code>mechanism=</code>: true/false field which decides whether to include the mechanism(s) of action related to the compound(s) queried for</li>
     <ul><li><strong>Default value</strong>: false</li></ul>
+    <li><code>indication=</code>: true/false field which decides whether to include the indication(s) related to the compound(s)/substance(s)/ADC(s) queried for</li>
+    <ul><li><strong>Default value</strong>: false</li></ul>
     <li><code>toxicity=</code>: true/false field which decides whether to include the toxicity fields related to the compound(s) queried for</li>
     <ul><li><strong>Default value</strong>: false</li></ul>
 	<li><code>bioassay=</code>: true/false field which decides whether to include the list of homo sapien bioassays related to the compound(s) queried for</li>
@@ -152,7 +154,10 @@ on or off (off by default) to include additional annotation data, as show in the
 		<li>ChEMBL</li>
 		<ul>
 			<li>
-				<a href="https://www.ebi.ac.uk/chembl/explore/drug_mechanisms/" target="_blank" rel="noopener noreferrer">ChEMBL Drug Mechanism of Action (MOA)
+				<a href="https://www.ebi.ac.uk/chembl/explore/drug_mechanisms/" target="_blank" rel="noopener noreferrer">ChEMBL Drug Mechanism of Action (MOA)</a>
+			</li>
+			<li>
+				<a href="https://www.ebi.ac.uk/chembl/explore/drug_indications/" target="_blank" rel="noopener noreferrer">ChEMBL Drug Indications</a>
 			</li>
 		</ul>
 	</ul>

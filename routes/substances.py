@@ -51,6 +51,9 @@ async def get_substances(
     mechanism: bool = Query(
         False, description="Toggle to include ChEMBL mechanism for queried substance(s)"
     ),
+    indication: bool = Query(
+        False, description="Toggle to include ChEMBL drug indications for queried substance(s)"
+    ),
     toxicity: bool = Query(
         False, description="Toggle to include toxicity for queried substance(s)"
     ),
@@ -92,7 +95,8 @@ async def get_substances(
     options = []
     if mechanism:
         options.append(selectinload(Substances.mechanisms))
-   
+    if indication:
+        options.append(selectinload(Substances.drug_indications))
     if toxicity:
         options.append(selectinload(Substances.toxicity))
 

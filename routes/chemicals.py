@@ -59,6 +59,9 @@ async def get_chemicals(
     mechanism: bool = Query(
         False, description="Toggle to include ChEMBL mechanism for queried chemical(s)"
     ),
+    indication: bool = Query(
+        False, description="Toggle to include ChEMBL drug indications for queried chemical(s)"
+    ),
     toxicity: bool = Query(
         False, description="Toggle to include toxicity for queried chemical(s)"
     ),
@@ -80,6 +83,7 @@ async def get_chemicals(
         format=format,
         bioassay=bioassay,
         mechanism=mechanism,
+        indication=indication,
         toxicity=toxicity,
         golden_bioassay=golden_bioassay,
         session=session
@@ -89,6 +93,7 @@ async def get_chemicals(
         substances=chemicals,
         format=format,
         mechanism=mechanism,
+        indication=indication,
         toxicity=toxicity,
         session=session
     )
