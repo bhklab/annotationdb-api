@@ -49,7 +49,8 @@ class Bioassay(BaseModel):
 
 class Mechanism(BaseModel):
     molecule_chembl_id: str
-    parent_molecule_chembl_id: str
+    parent_molecule_chembl_id: Optional[str] = None
+    child_molecule_chembl_id: Optional[str] = None
     action_type: str
     binding_site_comment: str
     mechanism_of_action: str
@@ -76,11 +77,13 @@ class Mechanism(BaseModel):
     variant_sequence_version: int
     source: str
     inferred_from_parent: bool
+    inferred_from_child: bool = False
 
 
 class DrugIndication(BaseModel):
     molecule_chembl_id: str
     parent_molecule_chembl_id: Optional[str] = None
+    child_molecule_chembl_id: Optional[str] = None
     drugind_id: int
     max_phase_for_ind: Optional[str] = None
     mesh_id: str
@@ -94,6 +97,7 @@ class DrugIndication(BaseModel):
     usan_ref_ids: Optional[str] = None
     inn_ref_ids: Optional[str] = None
     inferred_from_parent: bool = False
+    inferred_from_child: bool = False
 
 
 class PubchemOutput(BaseModel):
